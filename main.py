@@ -1,12 +1,9 @@
 import json
-from geopy import distance
+from geopy.distance import geodesic  # distance
 import folium
-from Map_Coffee_In_Moscow import fetch_coordinates as ft_coordinates
+import fetch_coordinates as ft_coordinates
 from dotenv import load_dotenv
 import os
-
-load_dotenv()
-API_KEY = os.environ['APIKEY_MAP']
 
 
 def load_coffee_data(file_path):
@@ -19,12 +16,13 @@ def calculate_distances(person_coordinates, coffee_data):
     coffee_info = []
     for coffee_shop in coffee_data:
         shop_coordinates = coffee_shop['geoData']['coordinates']
-        distance_to_person = distance.distance(person_coordinates, shop_coordinates).km
+        shop_coords = (shop_coordinates[0], shop_coordinates[1])
+        distance_to_person = geodesic(person_coordinates, shop_coords).km # distance
         coffee_info.append({
             'Name': coffee_shop['Name'],
             'distance': distance_to_person,
-            'latitude': shop_coordinates[1],
-            'longitude': shop_coordinates[0],
+            'latitude': shop_coords[1],
+            'longitude': shop_coords[0],
         })
     return coffee_info
 
@@ -56,7 +54,7 @@ def create_map(person_coordinates, coffee_info_sorted, output_file="index.html")
 
 def main():
     person_location = input('Где вы находитесь? ')
-    person_coordinates = ft_coordinates.fetch_coordinates(API_KEY, person_location)
+    person_coordinates = ft_coordinates.fetch_coordinates(api_key, person_location)
 
     if not person_coordinates:
         print("Ошибка получения координат. Убедитесь, что адрес указан корректно.")
@@ -72,4 +70,6 @@ def main():
 
 
 if __name__ == "__main__":
+    load_dotenv()
+    api_key = os.environ['APIKEY_MAP']
     main()
