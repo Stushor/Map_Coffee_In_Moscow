@@ -1,5 +1,5 @@
 import json
-from geopy.distance import geodesic  # distance
+from geopy.distance import distance
 import folium
 import fetch_coordinates as ft_coordinates
 from dotenv import load_dotenv
@@ -16,8 +16,9 @@ def calculate_distances(person_coordinates, coffee_data):
     coffee_info = []
     for coffee_shop in coffee_data:
         shop_coordinates = coffee_shop['geoData']['coordinates']
-        shop_coords = (shop_coordinates[0], shop_coordinates[1])
-        distance_to_person = geodesic(person_coordinates, shop_coords).km # distance
+        shop_coords = (shop_coordinates[1], shop_coordinates[0])
+        person_coords = (person_coordinates[1], person_coordinates[0])
+        distance_to_person = distance(person_coords, shop_coords).km
         coffee_info.append({
             'Name': coffee_shop['Name'],
             'distance': distance_to_person,
@@ -43,7 +44,7 @@ def create_map(person_coordinates, coffee_info_sorted, output_file="index.html")
 
     for coffee_shop in coffee_info_sorted[:5]:
         folium.Marker(
-            location=[coffee_shop['latitude'], coffee_shop['longitude']],
+            location=[coffee_shop['longitude'], coffee_shop['latitude']],
             tooltip=coffee_shop['Name'],
             popup=f"{coffee_shop['Name']}\n{coffee_shop['distance']:.2f} км",
             icon=folium.Icon(color="green", icon="info-sign")
