@@ -54,6 +54,8 @@ def create_map(person_coordinates, coffee_info_sorted, output_file="index.html")
 
 
 def main():
+    load_dotenv()
+    api_key = os.environ['APIKEY_MAP']
     person_location = input('Где вы находитесь? ')
     person_coordinates = ft_coordinates.fetch_coordinates(api_key, person_location)
 
@@ -71,6 +73,4 @@ def main():
 
 
 if __name__ == "__main__":
-    load_dotenv()
-    api_key = os.environ['APIKEY_MAP']
     main()
